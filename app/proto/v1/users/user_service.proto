@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package v1.users;
+
+option go_package = "github.com/protobuf/proto/v1/users/user_service";
+
+enum Platform {
+  UNKNOWN = 0;
+  WINDOWS = 1;
+  LINUX = 2;
+  MACOS = 3;
+}
+
+message UserRegistrationRequest {
+  string login = 1;
+  string password = 2;
+  string otp = 3;
+  Platform platform = 5;  // определение платформы
+}
+
+message UserRegistrationResponse {
+  bool success = 1;
+  string next_otp = 4;
+}
+
+service UserService {
+  rpc Registration(UserRegistrationRequest) returns (UserRegistrationResponse);
+}
