@@ -3,5 +3,5 @@
   "migration_path": "file:/home/dip96/go_project/gophKeeper/app/migrations",
   "stand": "local",
   "logger_level": "trace",
-  "grpc_address": "127.0.0.1:3200"
+  "grpc_address": "0.0.0.0:3201"
 }

@@ -1,11 +1,17 @@
 package main
 
 import (
+	"google.golang.org/grpc"
 	"gophKeeper/internal/config"
+	auth "gophKeeper/internal/lib/auth/jwt"
 	"gophKeeper/internal/logger"
 	"gophKeeper/internal/migrator"
-	"gophKeeper/internal/server/grpc"
+	cGrpc "gophKeeper/internal/server/grpc"
+	servicesGrpc "gophKeeper/internal/server/grpc/services"
+	userService "gophKeeper/internal/service/user"
 	"gophKeeper/internal/storage/postgres"
+	"gophKeeper/internal/uow"
+	pU "gophKeeper/protobuf/V1/users"
 	bLog "log"
 	"os"
 	"os/signal"
@@ -41,16 +47,28 @@ func main() {
 
 	//init storage
 	log.Info("init storage")
-	_, err = postgres.NewDB(cnf)
+	storage, err := postgres.NewDB(cnf)
 
 	if err != nil {
 		log.Error("failed to create storage:", err)
 		return
 	}
 
+	//TODO Добавить в конфиги
+	auth.Init("secret")
+
 	// init and start server
 	log.Info("starting server")
-	srv := grpc.NewGRPCServer(cnf)
+	srv := cGrpc.NewGRPCServer(cnf)
+
+	//TODO переместить в отдельный слой
+	uowService := uow.NewUnitOfWork(storage)
+	userSrv := servicesGrpc.NewUserService(userService.NewUserService(uowService))
+
+	srv.RegisterService(func(grpcServer *grpc.Server) {
+		pU.RegisterUserServiceServer(grpcServer, userSrv)
+	})
+
 	go func() {
 		if err := srv.Start(); err != nil {
 			log.Error("failed to start server:", err)

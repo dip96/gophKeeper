@@ -64,7 +64,7 @@ func (s *storage) QueryRow(ctx context.Context, sql string, args ...any) *dSql.R
 	return s.db.QueryRowContext(ctx, sql, args...)
 }
 
-func (s *storage) Begin(ctx context.Context) (*dSql.Tx, error) {
+func (s *storage) BeginTx(ctx context.Context) (*dSql.Tx, error) {
 	return s.db.BeginTx(ctx, nil)
 }
 
