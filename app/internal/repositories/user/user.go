@@ -46,7 +46,7 @@ func (r *userRepository) CreateUser(ctx context.Context, tx *sql.Tx, login strin
 
 	sqlQuery := "INSERT INTO users (login, password, salt) VALUES ($1, $2, $3)"
 
-	if tx == nil {
+	if tx != nil {
 		_, err := tx.ExecContext(ctx, sqlQuery, login, hashedPassword, salt)
 		return err
 	}
@@ -59,7 +59,7 @@ func (r *userRepository) GetUserByLogin(ctx context.Context, tx *sql.Tx, login s
 	sqlSelect := "SELECT id, login, password, salt, created_at FROM users WHERE login = $1"
 	var user userModel.User
 
-	if tx == nil {
+	if tx != nil {
 		err := tx.QueryRowContext(ctx, sqlSelect, login).Scan(&user.ID, &user.Login, &user.Password, &user.Salt, &user.CreatedAt)
 		if err != nil {
 			return nil, err

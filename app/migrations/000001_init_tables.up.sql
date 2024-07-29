@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS binary_data (
                                            entry_id BIGINT NOT NULL,
                                            path VARCHAR(255),
                                            notes TEXT,
+                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                            FOREIGN KEY (entry_id) REFERENCES entities(id)
 );
 
@@ -54,8 +56,9 @@ CREATE INDEX IF NOT EXISTS idx_binary_data_entry_id ON binary_data(entry_id);
 CREATE TABLE IF NOT EXISTS text_data (
                                          id SERIAL PRIMARY KEY,
                                          entry_id BIGINT NOT NULL,
-                                         path VARCHAR(255),
-                                         notes TEXT,
+                                         text TEXT,
+                                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                          FOREIGN KEY (entry_id) REFERENCES entities(id)
 );
 

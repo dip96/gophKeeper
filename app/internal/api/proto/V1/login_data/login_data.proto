@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package v1.login_data;
+
+option go_package = "gophKeeper/protobuf/V1/login_data";
+
+message LoginDataRequest {
+  string login = 1;
+  string password = 2;
+  string entry_id = 3;
+}
+
+message LoginDataResponse {
+  bool success = 1;
+}
+
+message GetLoginDataRequest {
+  string entry_id = 1;
+}
+
+message GetLoginDataResponse {
+  string login = 1;
+  string password = 2;
+  string entry_id = 3;
+}
+
+message EditLoginDataRequest {
+  string login = 1;
+  string password = 2;
+  string entry_id = 3;
+}
+
+message DeleteLoginDataRequest {
+  string entry_id = 1;
+}
+
+service LoginDataService {
+  rpc SaveLoginData(LoginDataRequest) returns (LoginDataResponse);
+  rpc GetLoginData(GetLoginDataRequest) returns (GetLoginDataResponse);
+  rpc EditLoginData(EditLoginDataRequest) returns (LoginDataResponse);
+  rpc DeleteLoginData(DeleteLoginDataRequest) returns (LoginDataResponse);
+}
