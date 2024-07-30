@@ -3,7 +3,6 @@ package main
 import (
 	"google.golang.org/grpc"
 	"gophKeeper/internal/config"
-	"gophKeeper/internal/encryption"
 	auth "gophKeeper/internal/lib/auth/jwt"
 	"gophKeeper/internal/logger"
 	"gophKeeper/internal/migrator"
@@ -62,20 +61,20 @@ func main() {
 	}
 
 	//работа с мастер ключом
-	var masterKey []byte
-	masterKey, err = encryption.LoadKeyFromFile()
-	if err != nil {
-		log.Infof("Master key not found, generating a new one")
-		masterKey, err = encryption.GenerateRandomKey(32)
-		if err != nil {
-			log.Error("Failed to generate master key:", err)
-			return
-		}
-		if err := encryption.SaveKeyToFile(masterKey); err != nil {
-			log.Error("Failed to save master key:", err)
-			return
-		}
-	}
+	//var masterKey []byte
+	//masterKey, err = encryption.LoadKeyFromFile()
+	//if err != nil {
+	//	log.Infof("Master key not found, generating a new one")
+	//	masterKey, err = encryption.GenerateRandomKey(32)
+	//	if err != nil {
+	//		log.Error("Failed to generate master key:", err)
+	//		return
+	//	}
+	//	if err := encryption.SaveKeyToFile(masterKey); err != nil {
+	//		log.Error("Failed to save master key:", err)
+	//		return
+	//	}
+	//}
 
 	//TODO Добавить в конфиги
 	auth.Init("secret")

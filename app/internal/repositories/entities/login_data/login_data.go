@@ -18,7 +18,7 @@ func NewLoginDataRepository(storage storage.Storage) entities.DataRepository[mod
 
 func (r *loginDataRepository) GetDataById(ctx context.Context, tx *sql.Tx, entityId int) (models.LoginData, error) {
 	var loginData models.LoginData
-	sqlQuery := "SELECT id, entry_id, username, password, url, notes, created_at, updated_at FROM login_data WHERE entry_id = $1"
+	sqlQuery := "SELECT * FROM login_data WHERE entry_id = $1"
 
 	if tx != nil {
 		err := tx.QueryRowContext(ctx, sqlQuery, entityId).Scan(&loginData.ID, &loginData.EntryID, &loginData.Username, &loginData.Password, &loginData.URL, &loginData.Notes, &loginData.CreatedAt, &loginData.UpdatedAt)

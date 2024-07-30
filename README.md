@@ -37,6 +37,7 @@
 - [OTP](https://github.com/pquerna/otp) - библиотека для OTP(one time password)
 - [TUI](https://github.com/marcusolsson/tui-go) -библиотека с поддержкой терминального интерфейса - TUI(terminal user interface)
 - [godoc](#) -  
+- [go-keyring](https://github.com/zalando/go-keyring) - для безопасного хранения данных на клиенте
 
 # Архитектура
 ## Сервер

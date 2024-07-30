@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
 	"errors"
 	"io"
 )
@@ -58,12 +57,4 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 	stream.XORKeyStream(plainText, cipherText)
 
 	return plainText, nil
-}
-
-func EncodeBase64(data []byte) string {
-	return base64.StdEncoding.EncodeToString(data)
-}
-
-func DecodeBase64(encoded string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(encoded)
 }

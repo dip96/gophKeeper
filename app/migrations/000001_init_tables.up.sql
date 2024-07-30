@@ -28,10 +28,14 @@ CREATE INDEX IF NOT EXISTS idx_entities_user_id ON entities(user_id);
 CREATE TABLE IF NOT EXISTS login_data (
                                           id SERIAL PRIMARY KEY,
                                           entry_id BIGINT NOT NULL,
-                                          username VARCHAR(255) NOT NULL,
-                                          password BYTEA NOT NULL,
-                                          url VARCHAR(2048),
+                                          username TEXT NOT NULL,
+                                          username_iv TEXT NOT NULL,
+                                          password TEXT NOT NULL,
+                                          password_iv TEXT NOT NULL,
+                                          url TEXT,
+                                          url_iv TEXT,
                                           notes TEXT,
+                                          notes_iv TEXT,
                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                           FOREIGN KEY (entry_id) REFERENCES entities(id)
