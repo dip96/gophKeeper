@@ -2,11 +2,13 @@ package interceptors
 
 import (
 	"context"
+	"github.com/go-chi/jwtauth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"gophKeeper/internal/lib/auth/jwt"
+	"strings"
 )
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -26,14 +28,23 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
 
-	token := md.Get("authorization")
-	if len(token) == 0 {
+	values := md.Get("authorization")
+	if len(values) == 0 {
 		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
 	}
 
-	claims, err := auth.VerifyToken(token[0])
+	authHeader := values[0]
+	bearerToken := strings.TrimPrefix(authHeader, "Bearer ")
+	if bearerToken == authHeader {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid token format")
+	}
+
+	claims, err := auth.VerifyToken(bearerToken)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid token")
+		if err == jwtauth.ErrExpired {
+			return nil, status.Errorf(codes.Unauthenticated, "token has expired")
+		}
+		return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 	}
 
 	newCtx := context.WithValue(ctx, "user_id", claims["user_id"])

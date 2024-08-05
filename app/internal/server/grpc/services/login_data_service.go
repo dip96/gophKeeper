@@ -45,7 +45,18 @@ func (s *LoginDataService) GetLoginData(ctx context.Context, req *pb.GetLoginDat
 	return &pb.GetLoginDataResponse{
 		Login:    loginData.Username,
 		Password: string(loginData.Password),
-		EntryId:  strconv.Itoa(loginData.EntryID),
+		Id:       strconv.Itoa(int(loginData.ID)),
+	}, nil
+}
+
+func (s *LoginDataService) GetAllLoginData(ctx context.Context, req *pb.GetAllLoginDataRequest) (*pb.GetAllLoginDataResponse, error) {
+	responseItems, err := s.loginDataService.GetAllLoginData(ctx, 1, 10)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	return &pb.GetAllLoginDataResponse{
+		Items: responseItems,
 	}, nil
 }
 

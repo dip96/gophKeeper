@@ -58,11 +58,6 @@ func (s *UserService) AuthenticateUser(ctx context.Context, login, password stri
 		return "", err
 	}
 
-	//TODO
-	//if !checkPasswordHash(password, user.Password) {
-	//	return "", ErrInvalidCredentials
-	//}
-
 	token, err := auth.GenerateToken(user.ID)
 	if err != nil {
 		return "", errors.New("failed to generate token")

@@ -3,8 +3,13 @@ package login_data
 import (
 	"context"
 	"errors"
+	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gophKeeper/internal/models/entities"
 	"gophKeeper/internal/uow"
+	pb "gophKeeper/protobuf/V1/login_data"
+	"strconv"
 )
 
 type LoginDataService struct {
@@ -24,9 +29,16 @@ func (s *LoginDataService) SaveLoginData(ctx context.Context, login, password st
 
 	loginDataRepo := s.uow.LoginDataRepository()
 
+	userID, ok := ctx.Value("user_id").(float64)
+	fmt.Println(userID)
+	if !ok {
+		return false, errors.New("failed to save login data")
+	}
+
 	loginData := entities.LoginData{
 		Username: login,
 		Password: []byte(password),
+		UserID:   int(userID),
 	}
 
 	if err = loginDataRepo.SaveData(ctx, tx, loginData); err != nil {
@@ -61,6 +73,30 @@ func (s *LoginDataService) GetLoginData(ctx context.Context, entryID int) (*enti
 	return &loginData, nil
 }
 
+func (s *LoginDataService) GetAllLoginData(ctx context.Context, page, limit int) ([]*pb.GetLoginDataResponse, error) {
+	tx, err := s.uow.BeginTx(ctx)
+	if err != nil {
+		return nil, errors.New("failed to begin transaction")
+	}
+	defer s.uow.Rollback(tx)
+
+	loginDataRepo := s.uow.LoginDataRepository()
+	allLoginData, err := loginDataRepo.GetAllData(ctx, tx, page, limit)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	var responseItems []*pb.GetLoginDataResponse
+	for _, data := range allLoginData {
+		responseItems = append(responseItems, &pb.GetLoginDataResponse{
+			Login:    data.Username,
+			Password: string(data.Password),
+			Id:       strconv.Itoa(int(data.ID)),
+		})
+	}
+
+	return responseItems, nil
+}
 func (s *LoginDataService) EditLoginData(ctx context.Context, entryID int, login, password string) (bool, error) {
 	tx, err := s.uow.BeginTx(ctx)
 	if err != nil {

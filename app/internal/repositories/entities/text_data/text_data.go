@@ -35,6 +35,11 @@ func (r *textDataRepository) GetDataById(ctx context.Context, tx *sql.Tx, entity
 	return textData, nil
 }
 
+func (r *textDataRepository) GetAllData(ctx context.Context, tx *sql.Tx, page, limit int) ([]models.TextData, error) {
+	var textData []models.TextData
+	return textData, nil
+}
+
 func (r *textDataRepository) SaveData(ctx context.Context, tx *sql.Tx, data models.TextData) error {
 	sqlQuery := "INSERT INTO text_data (entry_id, text, created_at, updated_at) VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	if tx != nil {

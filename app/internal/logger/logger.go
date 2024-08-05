@@ -3,7 +3,6 @@ package logger
 import (
 	"github.com/sirupsen/logrus"
 	configServer "gophKeeper/internal/config"
-	//errorLogger "gophKeeper/internal/errors/logger"
 )
 
 type Logger interface {

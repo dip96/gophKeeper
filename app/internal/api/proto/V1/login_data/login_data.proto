@@ -22,16 +22,24 @@ message GetLoginDataResponse {
   string login = 1;
   string password = 2;
   string entry_id = 3;
+  string id = 4;
 }
 
 message EditLoginDataRequest {
   string login = 1;
   string password = 2;
   string entry_id = 3;
+  string id = 4;
 }
 
 message DeleteLoginDataRequest {
   string entry_id = 1;
+}
+
+message GetAllLoginDataRequest {}
+
+message GetAllLoginDataResponse {
+  repeated GetLoginDataResponse items = 1;
 }
 
 service LoginDataService {
@@ -39,4 +47,5 @@ service LoginDataService {
   rpc GetLoginData(GetLoginDataRequest) returns (GetLoginDataResponse);
   rpc EditLoginData(EditLoginDataRequest) returns (LoginDataResponse);
   rpc DeleteLoginData(DeleteLoginDataRequest) returns (LoginDataResponse);
+  rpc GetAllLoginData(GetAllLoginDataRequest) returns (GetAllLoginDataResponse);
 }

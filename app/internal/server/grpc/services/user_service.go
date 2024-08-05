@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gophKeeper/internal/service/user"
@@ -43,8 +45,9 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 
 	token, err := s.userService.AuthenticateUser(ctx, req.Login, req.Password)
 	if err != nil {
-		switch err {
-		//TODO ErrInvalidCredentials
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, status.Error(codes.NotFound, "user not found")
 		default:
 			return nil, status.Error(codes.Internal, "internal server error")
 		}

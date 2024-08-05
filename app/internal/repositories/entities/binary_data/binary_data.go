@@ -35,6 +35,11 @@ func (r *binaryDataRepository) GetDataById(ctx context.Context, tx *sql.Tx, enti
 	return binaryData, nil
 }
 
+func (r *binaryDataRepository) GetAllData(ctx context.Context, tx *sql.Tx, page, limit int) ([]models.BinaryData, error) {
+	var binaryData []models.BinaryData
+	return binaryData, nil
+}
+
 func (r *binaryDataRepository) SaveData(ctx context.Context, tx *sql.Tx, data models.BinaryData) error {
 	sqlQuery := "INSERT INTO binary_data (entry_id, path, notes, created_at, updated_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	if tx != nil {
