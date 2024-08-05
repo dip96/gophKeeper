@@ -20,7 +20,6 @@ func NewUserService(userService *user.UserService) *UserService {
 }
 
 func (s *UserService) Registration(ctx context.Context, req *pb.UserRegistrationRequest) (*pb.UserRegistrationResponse, error) {
-	//валидация
 	if req.Login == "" || req.Password == "" {
 		return nil, status.Error(codes.InvalidArgument, "login and password are required")
 	}

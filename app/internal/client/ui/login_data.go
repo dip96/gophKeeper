@@ -103,19 +103,16 @@ func ShowLoginPasswordForm(app *tview.Application, id string) {
 	// Обработка фокуса и нажатий клавиш
 	form.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyTab {
-			// Переход к следующему элементу
 			app.SetFocus(form.GetFormItem(1 % form.GetFormItemCount()))
 			return nil
 		}
 		if event.Key() == tcell.KeyBacktab {
-			// Переход к предыдущему элементу (Shift+Tab)
 			app.SetFocus(form.GetFormItem((1 + form.GetFormItemCount()) % form.GetFormItemCount()))
 			return nil
 		}
 		return event
 	})
 
-	// Установка начального фокуса
 	app.SetFocus(form.GetFormItem(0))
 
 	app.SetRoot(form, true)
