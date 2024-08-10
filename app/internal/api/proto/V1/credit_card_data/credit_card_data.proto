@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package v1.credit_card_data;
+
+option go_package = "gophKeeper/protobuf/V1/credit_card_data";
+
+message CreditCardDataRequest {
+  string card_number = 1;
+  string cardholder_name = 2;
+  string expiration_date = 3;
+  string cvv = 4;
+  string notes = 5;
+  string id = 6;
+}
+
+message CreditCardDataResponse {
+  bool success = 1;
+}
+
+message GetCreditCardDataRequest {
+  string id = 1;
+}
+
+message GetCreditCardDataResponse {
+  string card_number = 1;
+  string cardholder_name = 2;
+  string expiration_date = 3;
+  string cvv = 4;
+  string notes = 5;
+  string id = 6;
+}
+
+message EditCreditCardDataRequest {
+  string card_number = 1;
+  string cardholder_name = 2;
+  string expiration_date = 3;
+  string cvv = 4;
+  string notes = 5;
+  string id = 6;
+}
+
+message DeleteCreditCardDataRequest {
+  string id = 1;
+}
+
+message GetAllCreditCardDataRequest {}
+
+message GetAllCreditCardDataResponse {
+  repeated GetCreditCardDataResponse items = 1;
+}
+
+service CreditCardDataService {
+  rpc SaveCreditCardData(CreditCardDataRequest) returns (CreditCardDataResponse);
+  rpc GetCreditCardData(GetCreditCardDataRequest) returns (GetCreditCardDataResponse);
+  rpc EditCreditCardData(EditCreditCardDataRequest) returns (CreditCardDataResponse);
+  rpc DeleteCreditCardData(DeleteCreditCardDataRequest) returns (CreditCardDataResponse);
+  rpc GetAllCreditCardData(GetAllCreditCardDataRequest) returns (GetAllCreditCardDataResponse);
+}

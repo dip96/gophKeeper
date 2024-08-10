@@ -3,7 +3,6 @@ package login_data
 import (
 	"context"
 	"errors"
-	"fmt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gophKeeper/internal/models/entities"
@@ -30,7 +29,6 @@ func (s *LoginDataService) SaveLoginData(ctx context.Context, login, password st
 	loginDataRepo := s.uow.LoginDataRepository()
 
 	userID, ok := ctx.Value("user_id").(float64)
-	fmt.Println(userID)
 	if !ok {
 		return false, errors.New("failed to save login data")
 	}
@@ -97,6 +95,7 @@ func (s *LoginDataService) GetAllLoginData(ctx context.Context, page, limit int)
 
 	return responseItems, nil
 }
+
 func (s *LoginDataService) EditLoginData(ctx context.Context, entryID int, login, password string) (bool, error) {
 	tx, err := s.uow.BeginTx(ctx)
 	if err != nil {

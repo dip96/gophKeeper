@@ -6,7 +6,7 @@ option go_package = "gophKeeper/protobuf/V1/text_data";
 
 message TextDataRequest {
   string text = 1;
-  string entry_id = 2;
+  string id = 2;
 }
 
 message TextDataResponse {
@@ -14,21 +14,27 @@ message TextDataResponse {
 }
 
 message GetTextDataRequest {
-  string entry_id = 1;
+  string id = 1;
 }
 
 message GetTextDataResponse {
   string text = 1;
-  string entry_id = 2;
+  string id = 2;
 }
 
 message EditTextDataRequest {
   string text = 1;
-  string entry_id = 2;
+  string id = 2;
 }
 
 message DeleteTextDataRequest {
-  string entry_id = 1;
+  string id = 1;
+}
+
+message GetAllTextDataRequest {}
+
+message GetAllTextDataResponse {
+  repeated GetTextDataResponse items = 1;
 }
 
 service TextDataService {
@@ -36,4 +42,5 @@ service TextDataService {
   rpc GetTextData(GetTextDataRequest) returns (GetTextDataResponse);
   rpc EditTextData(EditTextDataRequest) returns (TextDataResponse);
   rpc DeleteTextData(DeleteTextDataRequest) returns (TextDataResponse);
+  rpc GetAllTextData(GetAllTextDataRequest) returns (GetAllTextDataResponse);
 }

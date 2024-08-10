@@ -9,12 +9,14 @@ import (
 	cGrpc "gophKeeper/internal/server/grpc"
 	servicesGrpc "gophKeeper/internal/server/grpc/services"
 	binaryDataService "gophKeeper/internal/service/binary_data"
+	creditCardDataService "gophKeeper/internal/service/credit_card_data"
 	loginDataService "gophKeeper/internal/service/login_data"
 	textDataService "gophKeeper/internal/service/text_data"
 	userService "gophKeeper/internal/service/user"
 	"gophKeeper/internal/storage/postgres"
 	"gophKeeper/internal/uow"
 	pBd "gophKeeper/protobuf/V1/binary_data"
+	pCc "gophKeeper/protobuf/V1/credit_card_data"
 	pLd "gophKeeper/protobuf/V1/login_data"
 	pTd "gophKeeper/protobuf/V1/text_data"
 	pU "gophKeeper/protobuf/V1/users"
@@ -89,12 +91,14 @@ func main() {
 	loginDataSrv := servicesGrpc.NewLoginDataService(loginDataService.NewLoginDataService(uowService))
 	binaryDataSrv := servicesGrpc.NewBinaryDataService(binaryDataService.NewBinaryDataService(uowService))
 	textDataSrv := servicesGrpc.NewTextDataService(textDataService.NewTextDataService(uowService))
+	creditCardDataSrv := servicesGrpc.NewCreditCardDataService(creditCardDataService.NewCreditCardDataService(uowService))
 
 	srv.RegisterService(func(grpcServer *grpc.Server) {
 		pU.RegisterUserServiceServer(grpcServer, userSrv)
 		pLd.RegisterLoginDataServiceServer(grpcServer, loginDataSrv)
 		pBd.RegisterBinaryDataServiceServer(grpcServer, binaryDataSrv)
 		pTd.RegisterTextDataServiceServer(grpcServer, textDataSrv)
+		pCc.RegisterCreditCardDataServiceServer(grpcServer, creditCardDataSrv)
 	})
 
 	go func() {

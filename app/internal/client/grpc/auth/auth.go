@@ -2,18 +2,32 @@ package auth
 
 import (
 	"context"
+	"time"
+
 	"gophKeeper/internal/client/grpc"
-	auth "gophKeeper/internal/lib/auth/keyring"
+	"gophKeeper/internal/lib/auth/keyring"
 	pb "gophKeeper/protobuf/V1/users"
 )
 
-func RegisterUser(login, password string, platform pb.Platform) error {
-	conn, err := grpc.GetConn()
+const defaultTimeout = 10 * time.Second
+
+type AuthService struct {
+	client pb.UserServiceClient
+}
+
+func NewAuthService() (*AuthService, error) {
+	conn, err := grpc.GetConnUnauthenticated()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer conn.Close()
-	client := pb.NewUserServiceClient(conn)
+	return &AuthService{
+		client: pb.NewUserServiceClient(conn),
+	}, nil
+}
+
+func (s *AuthService) RegisterUser(login, password string, platform pb.Platform) error {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	defer cancel()
 
 	req := &pb.UserRegistrationRequest{
 		Login:    login,
@@ -21,39 +35,31 @@ func RegisterUser(login, password string, platform pb.Platform) error {
 		Platform: platform,
 	}
 
-	_, err = client.Registration(context.Background(), req)
+	_, err := s.client.Registration(ctx, req)
 	return err
 }
 
-func LoginUser(login, password string) (string, error) {
-	conn, err := grpc.GetConn()
-	if err != nil {
-		return "", err
-	}
-	defer conn.Close()
-	client := pb.NewUserServiceClient(conn)
+func (s *AuthService) LoginUser(login, password string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	defer cancel()
 
 	req := &pb.LoginRequest{
 		Login:    login,
 		Password: password,
 	}
 
-	resp, err := client.Login(context.Background(), req)
+	resp, err := s.client.Login(ctx, req)
 	if err != nil {
 		return "", err
 	}
 
-	if err := auth.SaveToken(resp.Token); err != nil {
+	if err := keyring.SaveToken(resp.Token); err != nil {
 		return "", err
 	}
 
 	return resp.Token, nil
 }
 
-func Logout() error {
-	if err := auth.DeleteToken(); err != nil {
-		return err
-	}
-
-	return nil
+func (s *AuthService) Logout() error {
+	return keyring.DeleteToken()
 }

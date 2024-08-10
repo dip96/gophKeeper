@@ -8,10 +8,13 @@ protoc --go_out=. --go-grpc_out=. \
 --go-grpc_opt=Minternal/api/proto/V1/login_data/login_data.proto=protobuf/V1/login_data \
 --go_opt=Minternal/api/proto/V1/text_data/text_data.proto=protobuf/V1/text_data \
 --go-grpc_opt=Minternal/api/proto/V1/text_data/text_data.proto=protobuf/V1/text_data \
+--go_opt=Minternal/api/proto/V1/credit_card_data/credit_card_data.proto=protobuf/V1/credit_card_data \
+--go-grpc_opt=Minternal/api/proto/V1/credit_card_data/credit_card_data.proto=protobuf/V1/credit_card_data \
 internal/api/proto/V1/users/user_service.proto \
 internal/api/proto/V1/binary_data/binary_data.proto \
 internal/api/proto/V1/login_data/login_data.proto \
-internal/api/proto/V1/text_data/text_data.proto
+internal/api/proto/V1/text_data/text_data.proto \
+internal/api/proto/V1/credit_card_data/credit_card_data.proto
 
 
 rm -rf ./client.exe && GOOS=windows go build

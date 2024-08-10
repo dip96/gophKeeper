@@ -64,3 +64,19 @@ CREATE TABLE IF NOT EXISTS text_data (
 );
 
 CREATE INDEX IF NOT EXISTS idx_text_data_user_id ON text_data(user_id);
+
+-- Таблица credit_card_data
+CREATE TABLE IF NOT EXISTS credit_card_data (
+                                                id SERIAL PRIMARY KEY,
+                                                user_id BIGINT NOT NULL,
+                                                card_number BYTEA NOT NULL,
+                                                cardholder_name VARCHAR(255) NOT NULL,
+                                                expiration_date DATE NOT NULL,
+                                                cvv BYTEA NOT NULL,
+                                                notes TEXT,
+                                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                                FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_credit_card_data_user_id ON credit_card_data(user_id);

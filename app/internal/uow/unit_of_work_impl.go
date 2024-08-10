@@ -14,6 +14,7 @@ type UnitOfWork interface {
 	BinaryDataRepository() entities.DataRepository[models.BinaryData]
 	LoginDataRepository() entities.DataRepository[models.LoginData]
 	TextDataRepository() entities.DataRepository[models.TextData]
+	CreditCardDataRepository() entities.DataRepository[models.CreditCardData]
 
 	BeginTx(ctx context.Context) (*sql.Tx, error)
 	Commit(tx *sql.Tx) error

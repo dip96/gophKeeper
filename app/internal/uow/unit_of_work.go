@@ -7,6 +7,7 @@ import (
 	models "gophKeeper/internal/models/entities"
 	"gophKeeper/internal/repositories/entities"
 	"gophKeeper/internal/repositories/entities/binary_data"
+	"gophKeeper/internal/repositories/entities/credit_card_data"
 	"gophKeeper/internal/repositories/entities/login_data"
 	"gophKeeper/internal/repositories/entities/text_data"
 	"gophKeeper/internal/repositories/user"
@@ -14,20 +15,22 @@ import (
 )
 
 type unitOfWork struct {
-	db             storage.Storage
-	userRepo       user.UserRepository
-	binaryDataRepo entities.DataRepository[models.BinaryData]
-	loginDataRepo  entities.DataRepository[models.LoginData]
-	textDataRepo   entities.DataRepository[models.TextData]
+	db                 storage.Storage
+	userRepo           user.UserRepository
+	binaryDataRepo     entities.DataRepository[models.BinaryData]
+	loginDataRepo      entities.DataRepository[models.LoginData]
+	textDataRepo       entities.DataRepository[models.TextData]
+	creditCardDataRepo entities.DataRepository[models.CreditCardData]
 }
 
 func NewUnitOfWork(db storage.Storage) UnitOfWork {
 	return &unitOfWork{
-		db:             db,
-		userRepo:       user.NewUserRepository(db),
-		binaryDataRepo: binary_data.NewBinaryDataRepository(db),
-		loginDataRepo:  login_data.NewLoginDataRepository(db),
-		textDataRepo:   text_data.NewTextDataRepository(db),
+		db:                 db,
+		userRepo:           user.NewUserRepository(db),
+		binaryDataRepo:     binary_data.NewBinaryDataRepository(db),
+		loginDataRepo:      login_data.NewLoginDataRepository(db),
+		textDataRepo:       text_data.NewTextDataRepository(db),
+		creditCardDataRepo: credit_card_data.NewCreditCardDataRepository(db),
 	}
 }
 
@@ -45,6 +48,10 @@ func (u *unitOfWork) LoginDataRepository() entities.DataRepository[models.LoginD
 
 func (u *unitOfWork) TextDataRepository() entities.DataRepository[models.TextData] {
 	return u.textDataRepo
+}
+
+func (u *unitOfWork) CreditCardDataRepository() entities.DataRepository[models.CreditCardData] {
+	return u.creditCardDataRepo
 }
 
 func (u *unitOfWork) BeginTx(ctx context.Context) (*sql.Tx, error) {

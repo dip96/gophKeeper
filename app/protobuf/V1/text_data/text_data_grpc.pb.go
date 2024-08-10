@@ -23,16 +23,20 @@ const (
 	TextDataService_GetTextData_FullMethodName    = "/v1.text_data.TextDataService/GetTextData"
 	TextDataService_EditTextData_FullMethodName   = "/v1.text_data.TextDataService/EditTextData"
 	TextDataService_DeleteTextData_FullMethodName = "/v1.text_data.TextDataService/DeleteTextData"
+	TextDataService_GetAllTextData_FullMethodName = "/v1.text_data.TextDataService/GetAllTextData"
 )
 
 // TextDataServiceClient is the client API for TextDataService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Сервис для работы с текстовыми данными
 type TextDataServiceClient interface {
 	SaveTextData(ctx context.Context, in *TextDataRequest, opts ...grpc.CallOption) (*TextDataResponse, error)
 	GetTextData(ctx context.Context, in *GetTextDataRequest, opts ...grpc.CallOption) (*GetTextDataResponse, error)
 	EditTextData(ctx context.Context, in *EditTextDataRequest, opts ...grpc.CallOption) (*TextDataResponse, error)
 	DeleteTextData(ctx context.Context, in *DeleteTextDataRequest, opts ...grpc.CallOption) (*TextDataResponse, error)
+	GetAllTextData(ctx context.Context, in *GetAllTextDataRequest, opts ...grpc.CallOption) (*GetAllTextDataResponse, error)
 }
 
 type textDataServiceClient struct {
@@ -83,14 +87,27 @@ func (c *textDataServiceClient) DeleteTextData(ctx context.Context, in *DeleteTe
 	return out, nil
 }
 
+func (c *textDataServiceClient) GetAllTextData(ctx context.Context, in *GetAllTextDataRequest, opts ...grpc.CallOption) (*GetAllTextDataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAllTextDataResponse)
+	err := c.cc.Invoke(ctx, TextDataService_GetAllTextData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TextDataServiceServer is the server API for TextDataService service.
 // All implementations must embed UnimplementedTextDataServiceServer
 // for forward compatibility
+//
+// Сервис для работы с текстовыми данными
 type TextDataServiceServer interface {
 	SaveTextData(context.Context, *TextDataRequest) (*TextDataResponse, error)
 	GetTextData(context.Context, *GetTextDataRequest) (*GetTextDataResponse, error)
 	EditTextData(context.Context, *EditTextDataRequest) (*TextDataResponse, error)
 	DeleteTextData(context.Context, *DeleteTextDataRequest) (*TextDataResponse, error)
+	GetAllTextData(context.Context, *GetAllTextDataRequest) (*GetAllTextDataResponse, error)
 	mustEmbedUnimplementedTextDataServiceServer()
 }
 
@@ -109,6 +126,9 @@ func (UnimplementedTextDataServiceServer) EditTextData(context.Context, *EditTex
 }
 func (UnimplementedTextDataServiceServer) DeleteTextData(context.Context, *DeleteTextDataRequest) (*TextDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTextData not implemented")
+}
+func (UnimplementedTextDataServiceServer) GetAllTextData(context.Context, *GetAllTextDataRequest) (*GetAllTextDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllTextData not implemented")
 }
 func (UnimplementedTextDataServiceServer) mustEmbedUnimplementedTextDataServiceServer() {}
 
@@ -195,6 +215,24 @@ func _TextDataService_DeleteTextData_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TextDataService_GetAllTextData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllTextDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TextDataServiceServer).GetAllTextData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TextDataService_GetAllTextData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TextDataServiceServer).GetAllTextData(ctx, req.(*GetAllTextDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TextDataService_ServiceDesc is the grpc.ServiceDesc for TextDataService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -217,6 +255,10 @@ var TextDataService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTextData",
 			Handler:    _TextDataService_DeleteTextData_Handler,
+		},
+		{
+			MethodName: "GetAllTextData",
+			Handler:    _TextDataService_GetAllTextData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

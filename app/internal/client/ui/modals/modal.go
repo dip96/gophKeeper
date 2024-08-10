@@ -1,7 +1,8 @@
-package ui
+package modals
 
 import (
 	"github.com/rivo/tview"
+	"gophKeeper/internal/client/ui/navigation"
 )
 
 func ShowModal(app *tview.Application, message string) {
@@ -9,7 +10,7 @@ func ShowModal(app *tview.Application, message string) {
 		SetText(message).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(buttonIndex int, buttonLabel string) {
-			app.SetRoot(CreateMainMenu(app), true)
+			navigation.PopPage(app)
 		})
-	app.SetRoot(modal, true)
+	navigation.PushPage(app, modal, nil)
 }

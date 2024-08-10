@@ -18,17 +18,23 @@ func NewTextDataService(textDataService *text_data.TextDataService) *TextDataSer
 	return &TextDataService{textDataService: textDataService}
 }
 
+func (s *TextDataService) GetAllTextData(ctx context.Context, req *pb.GetAllTextDataRequest) (*pb.GetAllTextDataResponse, error) {
+	responseItems, err := s.textDataService.GetAllTextData(ctx, 1, 10)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal server error")
+	}
+
+	return &pb.GetAllTextDataResponse{
+		Items: responseItems,
+	}, nil
+}
+
 func (s *TextDataService) SaveTextData(ctx context.Context, req *pb.TextDataRequest) (*pb.TextDataResponse, error) {
 	if req.Text == "" {
 		return nil, status.Error(codes.InvalidArgument, "text is required")
 	}
 
-	entryID, err := strconv.Atoi(req.EntryId)
-	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid entry_id")
-	}
-
-	success, err := s.textDataService.SaveTextData(ctx, req.Text, entryID)
+	success, err := s.textDataService.SaveTextData(ctx, req.Text)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
@@ -37,7 +43,7 @@ func (s *TextDataService) SaveTextData(ctx context.Context, req *pb.TextDataRequ
 }
 
 func (s *TextDataService) GetTextData(ctx context.Context, req *pb.GetTextDataRequest) (*pb.GetTextDataResponse, error) {
-	entryID, err := strconv.Atoi(req.EntryId)
+	entryID, err := strconv.Atoi(req.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid entry_id")
 	}
@@ -48,18 +54,18 @@ func (s *TextDataService) GetTextData(ctx context.Context, req *pb.GetTextDataRe
 	}
 
 	return &pb.GetTextDataResponse{
-		Text:    textData.Text,
-		EntryId: strconv.Itoa(textData.EntryID),
+		Text: textData.Text,
+		Id:   strconv.Itoa(textData.ID),
 	}, nil
 }
 
 func (s *TextDataService) EditTextData(ctx context.Context, req *pb.EditTextDataRequest) (*pb.TextDataResponse, error) {
-	entryID, err := strconv.Atoi(req.EntryId)
+	id, err := strconv.Atoi(req.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid entry_id")
 	}
 
-	success, err := s.textDataService.EditTextData(ctx, entryID, req.Text)
+	success, err := s.textDataService.EditTextData(ctx, id, req.Text)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "internal server error")
 	}
@@ -68,7 +74,7 @@ func (s *TextDataService) EditTextData(ctx context.Context, req *pb.EditTextData
 }
 
 func (s *TextDataService) DeleteTextData(ctx context.Context, req *pb.DeleteTextDataRequest) (*pb.TextDataResponse, error) {
-	entryID, err := strconv.Atoi(req.EntryId)
+	entryID, err := strconv.Atoi(req.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid entry_id")
 	}
