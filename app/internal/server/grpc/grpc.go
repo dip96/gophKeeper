@@ -14,9 +14,16 @@ type GRPCServer struct {
 	services []func(*grpc.Server)
 }
 
-func NewGRPCServer(cfg config.ConfigServer) *GRPCServer {
+func NewGRPCServer(cfg config.ConfigServer, srvOptions ...grpc.ServerOption) *GRPCServer {
+	var srv *grpc.Server
+	if len(srvOptions) > 0 {
+		srv = grpc.NewServer(srvOptions...)
+	} else {
+		srv = grpc.NewServer(grpc.UnaryInterceptor(interceptors.AuthInterceptor))
+	}
+
 	return &GRPCServer{
-		Srv: grpc.NewServer(grpc.UnaryInterceptor(interceptors.AuthInterceptor)),
+		Srv: srv,
 		cfg: cfg,
 	}
 }

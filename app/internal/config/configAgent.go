@@ -12,17 +12,24 @@ import (
 // ConfigClient - интерфейс для конфига клиента
 type ConfigClient interface {
 	GetGrpcAddress() string
+	GetSslCert() string
 }
 
 // client представляет конфигурацию клиента.
 type client struct {
 	// GrpcAddress - адрес gRPC сервера
 	GrpcAddress string `json:"grpc_address"`
+	// SslCert - путь к SSL сертификату
+	SslCert string `json:"ssl_cert"`
 }
 
 // Реализация интерфейса ConfigClient для структуры client
 func (c *client) GetGrpcAddress() string {
 	return c.GrpcAddress
+}
+
+func (c *client) GetSslCert() string {
+	return c.SslCert
 }
 
 var (
@@ -74,8 +81,9 @@ func initClientConfig() (ConfigClient, error) {
 }
 
 func parseClientFlags(cfg *client) error {
-	flag.StringVar(&cfg.GrpcAddress, "grpc", "172.20.255.21:3201", "gRPC server address")
-	//flag.StringVar(&cfg.GrpcAddress, "grpc", "localhost:3201", "gRPC server address")
+	flag.StringVar(&cfg.GrpcAddress, "grpc", "localhost:3201", "gRPC server address")
+	//flag.StringVar(&cfg.GrpcAddress, "grpc", "172.20.255.21:3201", "gRPC server address")
+	flag.StringVar(&cfg.SslCert, "ssl_cert", "./ssl/cert.pem", "path to SSL certificate")
 	flag.Parse()
 	return nil
 }
@@ -83,6 +91,9 @@ func parseClientFlags(cfg *client) error {
 func overrideClientFromEnv(cfg *client) error {
 	if envGrpcAddress := os.Getenv("GRPC_ADDRESS"); envGrpcAddress != "" {
 		cfg.GrpcAddress = envGrpcAddress
+	}
+	if envSslCert := os.Getenv("SSL_CERT"); envSslCert != "" {
+		cfg.SslCert = envSslCert
 	}
 	return nil
 }

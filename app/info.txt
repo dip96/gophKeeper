@@ -24,13 +24,10 @@ seahorse
 gnome-keyring-daemon --unlock
 gnome-keyring-daemon --replace
 
-Привет. Что ты можешь рассказать о dive deeper шифровании?
-Добавить
-Поддержку TLS
+Добавить Поддержку TLS
 Кеширование данных для режима read-only
 
 mvc - клиенту
-grpc -
 упор на тесты -
 logrus - zerolog
 

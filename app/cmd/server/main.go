@@ -1,7 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
+	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"gophKeeper/internal/config"
 	auth "gophKeeper/internal/lib/auth/jwt"
 	"gophKeeper/internal/logger"
@@ -32,22 +35,20 @@ func main() {
 
 	//init logger
 	log, err := logger.Init()
-
 	if err != nil {
 		bLog.Println(err.Error())
+		return
 	}
 
 	//init migrator
 	log.Info("init migrator")
 	migIns, err := migrator.NewMigrator(cnf)
-
 	if err != nil {
 		log.Error("failed to create migrator:", err)
 		return
 	}
 
 	err = migIns.Up()
-
 	if err != nil {
 		log.Error("Error migrator")
 		panic("Error migrator")
@@ -56,36 +57,21 @@ func main() {
 	//init storage
 	log.Info("init storage")
 	storage, err := postgres.NewDB(cnf)
-
 	if err != nil {
 		log.Error("failed to create storage:", err)
 		return
 	}
 
-	//работа с мастер ключом
-	//var masterKey []byte
-	//masterKey, err = encryption.LoadKeyFromFile()
-	//if err != nil {
-	//	log.Infof("Master key not found, generating a new one")
-	//	masterKey, err = encryption.GenerateRandomKey(32)
-	//	if err != nil {
-	//		log.Error("Failed to generate master key:", err)
-	//		return
-	//	}
-	//	if err := encryption.SaveKeyToFile(masterKey); err != nil {
-	//		log.Error("Failed to save master key:", err)
-	//		return
-	//	}
-	//}
-
-	//TODO Добавить в конфиги
 	auth.Init("secret")
 
-	// init and start server
-	log.Info("starting server")
-	srv := cGrpc.NewGRPCServer(cnf)
+	tlsCredentials, err := loadTLSCredentials(cnf)
+	if err != nil {
+		log.Error("failed to load TLS credentials:", err)
+		return
+	}
 
-	//TODO переместить в отдельный слой
+	srv := cGrpc.NewGRPCServer(cnf, grpc.Creds(tlsCredentials))
+
 	uowService := uow.NewUnitOfWork(storage)
 	userSrv := servicesGrpc.NewUserService(userService.NewUserService(uowService))
 	loginDataSrv := servicesGrpc.NewLoginDataService(loginDataService.NewLoginDataService(uowService))
@@ -116,4 +102,20 @@ func main() {
 	if err := srv.Stop(); err != nil {
 		log.Error("failed to stop server:", err)
 	}
+}
+
+func loadTLSCredentials(cfg config.ConfigServer) (credentials.TransportCredentials, error) {
+	certPath := cfg.GetSslCert()
+	keyPath := cfg.GetSslKey()
+
+	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load key pair: %w", err)
+	}
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+
+	return credentials.NewTLS(config), nil
 }

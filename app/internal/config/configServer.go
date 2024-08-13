@@ -17,6 +17,8 @@ type ConfigServer interface {
 	GetStand() string
 	GetLoggerLevel() string
 	GetGrpcAddress() string
+	GetSslCert() string
+	GetSslKey() string
 }
 
 // Реализация интерфейса ConfigInstance для структуры Server
@@ -43,6 +45,14 @@ func (c *server) GetGrpcAddress() string {
 	return c.GrpcAddress
 }
 
+func (c *server) GetSslCert() string {
+	return c.SslCert
+}
+
+func (c *server) GetSslKey() string {
+	return c.SslKey
+}
+
 // server представляет конфигурацию сервера.
 type server struct {
 	// InitialConfig - путь до файла конфигурации
@@ -57,6 +67,10 @@ type server struct {
 	LoggerLevel string `json:"logger_level"`
 	//GrpcAddress - адрес grpc
 	GrpcAddress string `json:"grpc_address"`
+	//SslCert - путь к SSL сертификату
+	SslCert string `json:"ssl_cert"`
+	// SslKey - путь к SSL ключу
+	SslKey string `json:"ssl_key"`
 }
 
 var (
@@ -118,6 +132,8 @@ func parseFlags(cfg *server) error {
 	flag.StringVar(&cfg.Stand, "s", "", "current stand")
 	flag.StringVar(&cfg.LoggerLevel, "l", "", "logger level")
 	flag.StringVar(&cfg.GrpcAddress, "g", "", "grpc address")
+	flag.StringVar(&cfg.SslCert, "ssl_cert", "", "path to SSL certificate")
+	flag.StringVar(&cfg.SslKey, "ssl_key", "", "path to SSL key")
 
 	flag.Parse()
 	return nil
@@ -146,6 +162,14 @@ func overrideFromEnv(cfg *server) error {
 
 	if envGrpcAddress := os.Getenv("GRPC_ADDRESS"); envGrpcAddress != "" {
 		cfg.GrpcAddress = envGrpcAddress
+	}
+
+	if envSslCert := os.Getenv("SSL_CERT"); envSslCert != "" {
+		cfg.SslCert = envSslCert
+	}
+
+	if envSslKey := os.Getenv("SSL_KEY"); envSslKey != "" {
+		cfg.SslKey = envSslKey
 	}
 
 	return nil

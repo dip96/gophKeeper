@@ -3,5 +3,7 @@
   "migration_path": "file:/home/dip96/go_project/gophKeeper/app/migrations",
   "stand": "local",
   "logger_level": "trace",
-  "grpc_address": "0.0.0.0:3201"
+  "grpc_address": "0.0.0.0:3201",
+  "ssl_cert": "./ssl/cert.pem",
+  "ssl_key": "./ssl/key.pem"
 }
