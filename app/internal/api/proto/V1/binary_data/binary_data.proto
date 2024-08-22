@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package v1.binary_data;
+
+option go_package = "gophKeeper/protobuf/V1/binary_data";
+
+message BinaryDataRequest {
+  string path = 1;
+  string notes = 2;
+  string entry_id = 3;
+}
+
+message BinaryDataResponse {
+  bool success = 1;
+}
+
+message GetBinaryDataRequest {
+  string entry_id = 1;
+}
+
+message GetBinaryDataResponse {
+  string path = 1;
+  string notes = 2;
+  string entry_id = 3;
+}
+
+message EditBinaryDataRequest {
+  string path = 1;
+  string notes = 2;
+  string entry_id = 3;
+}
+
+message DeleteBinaryDataRequest {
+  string entry_id = 1;
+}
+
+service BinaryDataService {
+  rpc SaveBinaryData(BinaryDataRequest) returns (BinaryDataResponse);
+  rpc GetBinaryData(GetBinaryDataRequest) returns (GetBinaryDataResponse);
+  rpc EditBinaryData(EditBinaryDataRequest) returns (BinaryDataResponse);
+  rpc DeleteBinaryData(DeleteBinaryDataRequest) returns (BinaryDataResponse);
+}

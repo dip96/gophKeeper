@@ -1,0 +1,5 @@
+{
+  "grpc_address": "172.20.255.21:3201",
+  "ssl_cert": "./ssl/cert.pem",
+  "ssl_key": "./ssl/key.pem"
+}

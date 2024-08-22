@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    ports:
+      - "3200:3200"
+      - "2345:2345"
+    volumes:
+      - ../app:/app
+    depends_on:
+      - db
+    security_opt:
+      - "seccomp:unconfined"
+    cap_add:
+      - SYS_PTRACE
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
+      - GRPC_ADDRESS=0.0.0.0:3200
+    networks:
+      - goph_keeper
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: "postgres"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../dbServer:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+      - "9090:8080"
+    networks:
+      - goph_keeper
+
+volumes:
+  postgres_data:
+
+networks:
+  goph_keeper:
+    external: true
+
